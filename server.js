@@ -10,6 +10,7 @@ const PRESIDENT_ACCESS_CODE = process.env.PRESIDENT_ACCESS_CODE;
 const rooms = new Map();
 
 app.use(express.json({ limit: "1mb" }));
+app.use(express.static(__dirname));
 app.get("/health", (_req, res) => res.json({ ok: true, service: "raging-angels-chapel", time: new Date().toISOString() }));
 app.get("/api/capabilities", (_req, res) => res.json({
   clubhouse: true,
