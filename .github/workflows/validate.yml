@@ -1,0 +1,41 @@
+name: Validate clubhouse
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: node --check server.js
+      - name: Check inline browser JavaScript syntax
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+            .map(match => match[1]).filter(code => code.trim());
+          if (!scripts.length) throw new Error('No inline scripts found');
+          scripts.forEach((code, i) => {
+            try { new Function(code); }
+            catch (error) { console.error('Inline script ' + i + ' failed:', error); process.exitCode = 1; }
+          });
+          if (!process.exitCode) console.log('Inline JavaScript syntax OK');
+          NODE
+      - name: Smoke test health endpoint
+        run: |
+          node server.js > /tmp/ramc-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:3000/health; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ramc-server.log
+          exit 1
