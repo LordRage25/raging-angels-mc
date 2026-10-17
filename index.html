@@ -16,16 +16,16 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;scroll-behavior:auto!important}}
 </style></head>
 <body>
-<header class="topbar"><div class="wordmark">RAGING ANGELS MC</div><div class="status">CALIFORNIA &nbsp;·&nbsp; EST. 2013</div></header>
+<header class="topbar"><div class="wordmark">RAGING ANGELS MC</div><div class="status">WORLDWIDE &nbsp;·&nbsp; EST. 2013</div></header>
 <main id="welcome" class="hero"><div class="hero-content">
 <div class="doors" aria-hidden="true"><div class="door"></div><div class="door right"></div></div>
 <div class="eyebrow">Brotherhood &nbsp;•&nbsp; Loyalty &nbsp;•&nbsp; Tradition</div>
 <h1>RAGING ANGELS<span>MOTORCYCLE CLUB</span></h1><div class="rule"></div>
 <p class="tagline">Welcome to Raging Angels MC</p><p class="subline">13 years of brotherhood, loyalty and tradition.</p>
-<button id="enter" class="primary">Enter the clubhouse &nbsp; ↗</button><div class="fineprint">ESTABLISHED 2013 &nbsp; · &nbsp; CALIFORNIA</div>
+<button id="enter" class="primary">Enter the clubhouse &nbsp; ↗</button><div class="fineprint">ESTABLISHED 2013 &nbsp; · &nbsp; WORLDWIDE</div>
 </div></main>
 <main id="clubhouse" class="wrap hidden">
-<div class="dashboard-head"><div><div class="section-label">Club operations · Member command centre</div><h2>Clubhouse Dashboard</h2><div class="muted">Raging Angels MC — chapter directory, leadership and club activity.</div></div><div class="eyebrow"><span id="clock">--:--:--</span><br><span id="today">CALIFORNIA TIME</span></div></div>
+<div class="dashboard-head"><div><div class="section-label">Club operations · Member command centre</div><h2>Clubhouse Dashboard</h2><div class="muted">Raging Angels MC — worldwide chapters, leadership and club activity.</div></div><div class="eyebrow"><span id="clock">--:--:--</span><br><span id="today">YOUR LOCAL TIME</span></div></div>
 <div class="grid overview"><article class="panel"><div class="section-label">Chapters</div><h3>03</h3><p class="muted">Initial chapter spaces</p></article><article class="panel"><div class="section-label">Support clubs</div><h3>03</h3><p class="muted">Directory spaces</p></article><article class="panel"><div class="section-label">Club status</div><h3>ACTIVE</h3><p class="muted">Clubhouse preview</p></article><article class="panel"><div class="section-label">Next step</div><h3>Members</h3><p class="muted">Build the member directory</p></article></div>
 <div class="layout"><aside class="sidebar" aria-label="Clubhouse navigation"><button class="active" data-tab="chapters">▦ &nbsp; Chapters</button><button data-tab="president">♛ &nbsp; National President</button><button data-tab="tree">⌘ &nbsp; Club hierarchy</button><button data-tab="support">✦ &nbsp; Support clubs</button></aside>
 <div class="content">
@@ -38,7 +38,7 @@
 </div></div></main>
 <footer class="foot">RAGING ANGELS MC &nbsp;·&nbsp; BROTHERHOOD &nbsp;·&nbsp; LOYALTY &nbsp;·&nbsp; TRADITION</footer>
 <script>
-function updateClubClock(){const now=new Date();document.getElementById('clock').textContent=now.toLocaleTimeString('en-GB',{hour12:false,timeZone:'America/Los_Angeles'});document.getElementById('today').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric',timeZone:'America/Los_Angeles'}).toUpperCase()+' · CALIFORNIA'}updateClubClock();setInterval(updateClubClock,1000);
+function updateClubClock(){const now=new Date();const clock=document.getElementById('clock');const today=document.getElementById('today');clock.textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||'Local time';today.textContent=now.toLocaleDateString(undefined,{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+' · '+zone.replaceAll('_',' ')}updateClubClock();setInterval(updateClubClock,1000);
 document.getElementById('enter').addEventListener('click',()=>{document.getElementById('welcome').classList.add('hidden');document.getElementById('clubhouse').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})});
 document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('.tab').forEach(section=>section.classList.toggle('hidden',section.id!==button.dataset.tab))}));
 const notes=document.getElementById('notes');try{notes.value=localStorage.getItem('ramc-notes')||''}catch(error){}
