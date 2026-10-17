@@ -93,7 +93,7 @@ document.getElementById('save').addEventListener('click',()=>{try{localStorage.s
          chapelState.members.filter(m=>m.id!==myId&&amAllowedToSpeak()).forEach(m=>makePeer(m.id,true));
        });
      });
-     socket.on('chapel:state',state=>{chapelState=state;applyMicFloor();renderMemberControls();});
+     socket.on('chapel:state',state=>{chapelState=state;applyMicFloor();renderMemberControls();syncPeerOffers();});
      socket.on('chapel:signal',async({fromId,signal})=>{
        try{
          const pc=await makePeer(fromId,false);
@@ -109,6 +109,7 @@ document.getElementById('save').addEventListener('click',()=>{try{localStorage.s
      socket.on('connect_error',()=>setStatus('Could not connect to the realtime service. Check that the backend is deployed.'));
    }catch(e){setStatus('Microphone access failed: '+e.message);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}joinBtn.disabled=false}
  }
+ function syncPeerOffers(){if(!socket?.connected||!chapelState||!amAllowedToSpeak())return;chapelState.members.filter(m=>m.id!==myId&&!peers.has(m.id)).forEach(m=>makePeer(m.id,true))}
  function renderMemberControls(){
    const root=document.getElementById('member-controls');root.replaceChildren();
    if(myRole!=='president'||!chapelState)return;
