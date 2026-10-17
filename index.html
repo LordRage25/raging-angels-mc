@@ -38,6 +38,7 @@
 <div class="muted" style="font-size:.78rem">All clubhouse features are intended to be available to members without premium tiers. Shared storage, secure President controls, member uploads and live voice/translation services are being connected as the next implementation stage.</div>
 </div></div></main>
 <footer class="foot">RAGING ANGELS MC &nbsp;·&nbsp; BROTHERHOOD &nbsp;·&nbsp; LOYALTY &nbsp;·&nbsp; TRADITION</footer>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 function updateClubClock(){const now=new Date();const clock=document.getElementById('clock');const today=document.getElementById('today');clock.textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||'Local time';today.textContent=now.toLocaleDateString(undefined,{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+' · '+zone.replaceAll('_',' ')}updateClubClock();setInterval(updateClubClock,1000);
 document.getElementById('enter').addEventListener('click',()=>{document.getElementById('welcome').classList.add('hidden');document.getElementById('clubhouse').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})});
@@ -45,8 +46,7 @@ document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener(
 const notes=document.getElementById('notes');try{notes.value=localStorage.getItem('ramc-notes')||''}catch(error){}
 let chapelFloor='president';function setChapelFloor(floor){chapelFloor=floor;document.getElementById('chapel-speaker').textContent=floor==='president'?'National President':'Member speaker';document.getElementById('chapel-state').textContent=floor==='president'?'Presidential floor active · listening continuously':'Member has the floor · President can pause or reclaim it';document.getElementById('floor-feedback').textContent=floor==='president'?'Floor returned to the President.':'Member floor granted.'}document.getElementById('pres-floor').addEventListener('click',()=>setChapelFloor('president'));document.getElementById('return-pres').addEventListener('click',()=>setChapelFloor('president'));document.getElementById('member-floor').addEventListener('click',()=>setChapelFloor('member'));document.getElementById('pause-member').addEventListener('click',()=>{if(chapelFloor==='member'){document.getElementById('floor-feedback').textContent='Active member paused by the President.';setChapelFloor('president')}else{document.getElementById('floor-feedback').textContent='No member currently has the floor.'}});
 document.getElementById('save').addEventListener('click',()=>{try{localStorage.setItem('ramc-notes',notes.value);document.getElementById('saved').textContent='Saved on this device.'}catch(error){document.getElementById('saved').textContent='This browser could not save the notes.'}});
-<script src="/socket.io/socket.io.js"></script>
-<script>
+
 (function(){
  let socket=null, stream=null, myRole='member', myId=null, chapelState=null;
  const peers=new Map();
@@ -130,4 +130,4 @@ document.getElementById('save').addEventListener('click',()=>{try{localStorage.s
  });
  language.addEventListener('change',()=>{if(socket?.connected)socket.emit('chapel:update-language',{language:language.value})});
 })();
-</script></script></body></html>
+</script></body></html>
