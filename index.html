@@ -118,7 +118,18 @@ function initClubhouse3D(){
  const fillLight=new THREE.PointLight(0xffd9a1,18,22);fillLight.position.set(0,4.5,5);scene.add(fillLight);
  const frontFill=new THREE.DirectionalLight(0xe1e8d7,1.4);frontFill.position.set(0,5,8);scene.add(frontFill);
  const mat=(color,roughness=.78,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
- const wood=mat(0x33291b),darkWood=mat(0x17150f),floorMat=mat(0x24231a),black=mat(0x101310,.38,.65),chrome=mat(0x9da49a,.25,.82),leather=mat(0x29251d),green=mat(0x24553a),felt=mat(0x14512f),gold=mat(0xb5a16b,.34,.55),wall=mat(0x242b20),ivory=mat(0xe0e4d5,.48,.2);
+ 
+ const wood=mat(0x5a4027,.82),darkWood=mat(0x241b12,.86),floorMat=mat(0x3b3020,.92),black=mat(0x101310,.38,.65),chrome=mat(0x9da49a,.25,.82),leather=mat(0x29251d,.64),green=mat(0x24553a,.45),felt=mat(0x14512f,.9),gold=mat(0xb5a16b,.34,.55),wall=mat(0x242b20,.9),ivory=mat(0xe0e4d5,.48,.2);
+ // Procedural grain and board textures make the materials read as timber and worn clubhouse flooring.
+ function grainTexture(base,grain,boards=false){
+   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;const ctx=canvas.getContext('2d');
+   ctx.fillStyle=base;ctx.fillRect(0,0,512,512);
+   for(let i=0;i<190;i++){ctx.strokeStyle=grain;ctx.globalAlpha=.08+Math.random()*.16;ctx.lineWidth=.5+Math.random()*2;ctx.beginPath();const y=Math.random()*512;ctx.moveTo(0,y);ctx.bezierCurveTo(140,y-8+Math.random()*16,340,y-8+Math.random()*16,512,y-3+Math.random()*6);ctx.stroke()}
+   if(boards){ctx.globalAlpha=.35;ctx.strokeStyle='#090906';ctx.lineWidth=3;for(let y=0;y<=512;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(512,y);ctx.stroke()}ctx.globalAlpha=1}
+   const tex=new THREE.CanvasTexture(canvas);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(2,2);tex.colorSpace=THREE.SRGBColorSpace;return tex;
+ }
+ wood.map=grainTexture('#4a3522','#c39a64');darkWood.map=grainTexture('#21170f','#87603a');floorMat.map=grainTexture('#3b3020','#b28b53',true);leather.map=grainTexture('#242019','#78644b');wood.needsUpdate=darkWood.needsUpdate=floorMat.needsUpdate=leather.needsUpdate=true;
+
  const box=(parent,x,y,z,w,h,d,material,shadow=true)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;parent.add(m);return m};
  const cyl=(parent,x,y,z,rt,rb,h,material,seg=16)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
  const sphere=(parent,x,y,z,r,material)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),material);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m};
@@ -153,8 +164,11 @@ function initClubhouse3D(){
    for(const dx of [-w*.42,w*.42])for(const dz of [-d*.36,d*.36])box(g,x+dx,.4,z+dz,.1,.75,.1,darkWood);
  }
  function wallCrest(g){
-   box(g,0,2.1,-5.48,4.4,2.05,.18,darkWood);
-   box(g,0,2.1,-5.36,4.12,1.78,.06,black);
+   box(g,0,2.1,-5.48,5.2,2.55,.28,darkWood);
+   box(g,0,2.1,-5.28,4.88,2.25,.08,black);
+   // Double inset metal trim around the club's wall display.
+   for(const y of [1.02,3.18])box(g,0,y,-5.20,4.95,.045,.045,gold,false);
+   for(const x of [-2.43,2.43])box(g,x,2.1,-5.20,.045,2.2,.045,gold,false);
    const ring=new THREE.Mesh(new THREE.TorusGeometry(.65,.055,12,48),gold);ring.position.set(0,2.05,-5.25);g.add(ring);
    // Stylised Spartan helmet emblem in metal, with wing-like side plates.
    const helmet=sphere(g,0,2.12,-5.2,.42,chrome);helmet.scale.set(.75,1,.28);
@@ -169,6 +183,13 @@ function initClubhouse3D(){
 // Enlarge the room shell and furnishings together so the hall reads as a real club headquarters.
 hall.scale.setScalar(1.55);
 wallCrest(hall);
+// Timber dado rails and framed wall panels around the full hall perimeter.
+for(const z of [-4.7,-2.3,.1,2.5,4.9]){box(hall,0,1.05,z,11.2,.13,.16,darkWood);box(hall,0,2.55,z,11.2,.1,.14,darkWood)}
+for(const x of [-5.25,5.25])for(const z of [-4.5,-2.1,.3,2.7,5.1]){
+ box(hall,x,1.8,z,.12,1.35,1.55,wood);
+ box(hall,x*.985,1.8,z,.05,1.08,1.25,darkWood);
+ box(hall,x*.97,1.8,z,.035,1.0,1.17,wall);
+}
 addBike(hall,-4.2,-1.2,1.05);addBike(hall,4.2,-1.2,1.05);
 addBike(hall,-6.2,1.2,.92);addBike(hall,6.2,1.2,.92);
 chair(hall,-2.2,-2.8,.2);chair(hall,2.2,-2.8,-.2);
