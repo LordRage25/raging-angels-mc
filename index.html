@@ -114,7 +114,9 @@ function initClubhouse3D(){
  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.8));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;host.replaceChildren(renderer.domElement);
  scene.add(new THREE.HemisphereLight(0xdce8cf,0x383326,3.4));
  const key=new THREE.DirectionalLight(0xffe8cf,3.8);key.position.set(-4,8,5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);key.shadow.bias=-0.00025;key.shadow.normalBias=0.035;key.shadow.radius=7;scene.add(key);
- const greenLight=new THREE.PointLight(0x8fca68,9,15);greenLight.position.set(0,3.7,0);scene.add(greenLight);\n const fillLight=new THREE.PointLight(0xffd9a1,18,22);fillLight.position.set(0,4.5,5);scene.add(fillLight);\n const frontFill=new THREE.DirectionalLight(0xe1e8d7,1.4);frontFill.position.set(0,5,8);scene.add(frontFill);
+ const greenLight=new THREE.PointLight(0x8fca68,9,15);greenLight.position.set(0,3.7,0);scene.add(greenLight);
+ const fillLight=new THREE.PointLight(0xffd9a1,18,22);fillLight.position.set(0,4.5,5);scene.add(fillLight);
+ const frontFill=new THREE.DirectionalLight(0xe1e8d7,1.4);frontFill.position.set(0,5,8);scene.add(frontFill);
  const mat=(color,roughness=.78,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
  const wood=mat(0x33291b),darkWood=mat(0x17150f),floorMat=mat(0x24231a),black=mat(0x101310,.38,.65),chrome=mat(0x9da49a,.25,.82),leather=mat(0x29251d),green=mat(0x24553a),felt=mat(0x14512f),gold=mat(0xb5a16b,.34,.55),wall=mat(0x242b20),ivory=mat(0xe0e4d5,.48,.2);
  const box=(parent,x,y,z,w,h,d,material,shadow=true)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;parent.add(m);return m};
