@@ -216,52 +216,62 @@ hall.scale.setScalar(1.42);
 wallCrest(hall);
 // Main Hall: high clear ceiling, open central floor, leather couches around the perimeter.
 // Keep wall trim low and restrained: no horizontal timber rails crossing the camera view.
-for(const x of [-5.25,5.25])for(const z of [-4.5,-2.1,.3,2.7,5.1]){
- box(hall,x,1.65,z,.12,1.2,1.55,wood);
- box(hall,x*.985,1.65,z,.05,.96,1.25,darkWood);
- box(hall,x*.97,1.65,z,.035,.88,1.17,wall);
+// Push side walls to the edge of the expanded hall, preserving a wide view and walkable perimeter.
+for(const x of [-7.2,7.2])for(const z of [-5.5,-2.7,.1,2.9,5.7]){
+ box(hall,x,1.7,z,.12,1.45,1.65,wood);
+ box(hall,x*.994,1.7,z,.05,1.18,1.35,darkWood);
+ box(hall,x*.99,1.7,z,.035,1.02,1.18,wall);
 }
 // Keep the Main Hall sightline free of doors; room entrances will be built as separate connected areas later.
-box(hall,0,1.55,5.63,10.8,3.0,.22,darkWood);
-for(const x of [-4.5,-2.8,-1.1,1.1,2.8,4.5]){
- box(hall,x,1.75,5.48,.12,2.55,.12,wood);
+// Move the crest wall to the far end of the room so the camera can rotate without being boxed in.
+box(hall,0,2.15,8.1,14.4,4.1,.28,darkWood);
+for(const x of [-6.4,-4.3,-2.2,0,2.2,4.3,6.4]){
+ box(hall,x,2.1,7.92,.12,3.55,.12,wood);
 }
 // Remove the accidental interior door panels: the meeting-room and garage openings are planned for a later stage.
 // Side-wall framed club-history panels only.
-for(const side of [-1,1])for(const z of [-3.6,-.5,2.6]){
- const x=side*5.52;
+for(const side of [-1,1])for(const z of [-4.2,-.8,2.6]){
+ const x=side*7.35;
  box(hall,x,2.15,z,.08,1.15,1.45,darkWood);
  box(hall,x-side*.05,2.15,z,.035,.98,1.25,black,false);
  box(hall,x-side*.075,2.15,z,.025,.84,1.1,side<0?green:wood,false);
 }
 // Parquet floor, with a broad clear centre walkway.
 const parquetA=mat(0x624a32,.9),parquetB=mat(0x493522,.92);
-for(let x=-5.2;x<5.2;x+=.72)for(let z=-5.2;z<5.2;z+=.72){
+for(let x=-7.1;x<7.1;x+=.72)for(let z=-6.4;z<8.0;z+=.72){
  const tile=box(hall,x,.012,z,.69,.018,.69,((Math.round((x+z)/.72)%2)===0)?parquetA:parquetB,false);
  tile.castShadow=false;
 }
-function hallSofa(g,x,z,length=2.3,rot=0){
+function hallSofa(g,x,z,length=2.8,rot=0){
  const s=new THREE.Group();s.position.set(x,0,z);s.rotation.y=rot;g.add(s);
- box(s,0,.39,0,length,.42,.82,leather);
- box(s,0,.76,-.31,length,.42,.20,leather);
- for(const dx of [-length/2+.13,length/2-.13])box(s,dx,.62,0,.20,.48,.82,leather);
- for(let i=0;i<Math.max(2,Math.floor(length/.65));i++){
-  const px=-length/2+.4+i*.62;
-  box(s,px,.63,-.02,.55,.10,.58,mat(i%2?0x343128:0x403b31,.82));
+ // Upholstered sofa with rounded cushions, rolled arms, backrest and separate seat pads.
+ const body=box(s,0,.38,0,length,.34,.88,leather);body.geometry=new THREE.BoxGeometry(length,.34,.88);
+ box(s,0,.78,-.34,length,.54,.22,leather);
+ for(const dx of [-length/2+.13,length/2-.13]){
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(.18,.2,.66,12),leather);arm.rotation.z=Math.PI/2;arm.scale.set(1,1,1);arm.position.set(dx,.56,-.02);s.add(arm);
+  box(s,dx,.19,0,.12,.30,.13,darkWood);
  }
- for(const dx of [-length/2+.25,length/2-.25])for(const dz of [-.28,.28])box(s,dx,.16,dz,.12,.28,.12,darkWood);
+ const cushionMatA=mat(0x302b25,.88),cushionMatB=mat(0x393229,.88);
+ const count=Math.max(2,Math.floor(length/.78)),usable=length-.48,step=usable/count;
+ for(let i=0;i<count;i++){
+  const px=-usable/2+step*(i+.5);
+  const cushion=new THREE.Mesh(new THREE.BoxGeometry(step-.045,.13,.57),i%2?cushionMatA:cushionMatB);
+  cushion.position.set(px,.62,-.015);s.add(cushion);
+  box(s,px,.79,-.255,.055,.27,.08,leather);
+ }
+ for(const dx of [-length/2+.28,length/2-.28])for(const dz of [-.29,.29])box(s,dx,.14,dz,.09,.25,.09,darkWood);
 }
-hallSofa(hall,-3.9,3.5,2.6);hallSofa(hall,0,3.5,2.5);hallSofa(hall,3.9,3.5,2.6);
-hallSofa(hall,-3.9,-2.1,2.6,Math.PI);hallSofa(hall,0,-2.1,2.5,Math.PI);hallSofa(hall,3.9,-2.1,2.6,Math.PI);
-hallSofa(hall,-4.45,.65,2.0,Math.PI/2);hallSofa(hall,4.45,.65,2.0,-Math.PI/2);
+hallSofa(hall,-5.05,5.25,3.0);hallSofa(hall,0,5.25,3.0);hallSofa(hall,5.05,5.25,3.0);
+hallSofa(hall,-5.05,-3.8,3.0,Math.PI);hallSofa(hall,0,-3.8,3.0,Math.PI);hallSofa(hall,5.05,-3.8,3.0,Math.PI);
+hallSofa(hall,-6.05,.7,2.6,Math.PI/2);hallSofa(hall,6.05,.7,2.6,-Math.PI/2);
 // Raise the roof substantially. All roof framing is attached directly beneath it and kept above the viewing line.
-box(hall,0,6.35,0,11.8,.32,11.6,darkWood);
+box(hall,0,6.35,1.0,15.8,.32,16.8,darkWood);
 // Slim roof framing only at the ceiling edge; no low crossbeams across the camera view.
-for(const x of [-5.35,5.35]){
- const rafter=box(hall,x,6.12,0,.16,.12,11.35,wood);rafter.castShadow=true;
+for(const x of [-7.35,7.35]){
+ const rafter=box(hall,x,6.12,0,.16,.12,16.2,wood);rafter.castShadow=true;
 }
-for(const z of [-5.25,5.25]){
- const crossbeam=box(hall,0,6.12,z,11.5,.12,.16,wood);crossbeam.castShadow=true;
+for(const z of [-6.8,8.5]){
+ const crossbeam=box(hall,0,6.12,z,15.5,.12,.16,wood);crossbeam.castShadow=true;
 }
 // Brighter warm pendant lights and stronger wall sconces.
 for(const x of [-3.0,0,3.0]){
