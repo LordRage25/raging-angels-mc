@@ -46,6 +46,16 @@
 .scene-loading{position:absolute;inset:0;display:grid;place-items:center;color:#b8c8aa;letter-spacing:.2em;font-size:.75rem}
 .scene-caption{padding:12px;text-align:center;color:#8e9a83;font-size:.67rem;letter-spacing:.1em;border-top:1px solid #253121}
 @media(max-width:650px){.clubhouse-3d{height:440px;min-height:340px}.scene-toolbar{gap:8px}.scene-toolbar .section-label{font-size:.58rem}}
+
+/* clubhouse visual polish pass */
+.clubhouse-3d{background:radial-gradient(ellipse at 50% 42%,#384a2e 0%,#151d12 54%,#080a08 100%)}
+.room-nav .room-art{background:linear-gradient(180deg,#414a35,#242c1e 54%,#10140e)}
+.room-nav .room-art.bar{background:linear-gradient(180deg,#625036,#352819 54%,#14100b)}
+.room-nav .room-art.pool{background:linear-gradient(180deg,#374b35,#172a1a 54%,#0c120c)}
+.room-nav .room-art.chapel{background:linear-gradient(180deg,#3a4830,#1b2417 54%,#0c100b)}
+.room-nav .room-art:before{opacity:.45}
+.room-nav button{transition:border-color .18s,transform .18s,box-shadow .18s}
+.room-nav button:hover{transform:translateY(-2px);box-shadow:0 8px 24px #0008}
 </style></head>
 <body>
 <header class="topbar"><div class="wordmark">RAGING ANGELS MC</div><div class="status">WORLDWIDE &nbsp;·&nbsp; EST. 2013</div></header>
@@ -167,14 +177,14 @@ for(const x of [-2.55,-1.3,0,1.3,2.55]){
 }
 for(const z of [-.4])for(const x of [-3.0,3.0])chair(chapel,x,z,x<0?Math.PI/2:-Math.PI/2);
 // Central club centerpiece: low metal-and-green crest sculpture on a circular base.
-cyl(chapel,0,1.11,-.45,.34,.34,.12,black,32);
-cyl(chapel,0,1.2,-.45,.25,.25,.08,gold,32);
-const centerpieceRing=new THREE.Mesh(new THREE.TorusGeometry(.23,.035,12,32),chrome);
+cyl(chapel,0,1.11,-.45,.52,.52,.12,black,32);
+cyl(chapel,0,1.2,-.45,.44,.44,.08,gold,32);
+const centerpieceRing=new THREE.Mesh(new THREE.TorusGeometry(.37,.035,12,32),chrome);
 centerpieceRing.position.set(0,1.34,-.45);centerpieceRing.rotation.x=Math.PI/2;chapel.add(centerpieceRing);
-const centerpieceCore=sphere(chapel,0,1.34,-.45,.16,green);
-centerpieceCore.scale.set(.72,1,.65);
-const centerpieceWingL=box(chapel,-.28,1.34,-.45,.23,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
-const centerpieceWingR=box(chapel,.28,1.34,-.45,.23,.045,.08,gold);centerpieceWingR.rotation.z=.2;
+const centerpieceCore=sphere(chapel,0,1.34,-.45,.24,green);
+centerpieceCore.scale.set(.72,.65,.65);
+const centerpieceWingL=box(chapel,-.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
+const centerpieceWingR=box(chapel,.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingR.rotation.z=.2;
  let active='main-room',target=new THREE.Vector3(0,1.6,-3.5),camTarget=new THREE.Vector3(0,2,0),dragging=false,lastX=0,lastY=0,yaw=0,pitch=0;
  const positions={'main-room':[0,2.3,7.8],'bar-room':[0,2.5,7.6],'pool-room':[0,2.7,7.9],'chapel':[0,2.4,7.6]};
  function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,1.5,-3.5);camera.lookAt(target);yaw=0;pitch=0}
