@@ -268,8 +268,9 @@ box(hall,0,3.24,0,11.8,.24,11.6,darkWood);
 for(const x of [-5,-2.5,0,2.5,5]){
  const rafter=box(hall,x,3.08,0,.22,.18,11.35,wood);rafter.castShadow=true;
 }
-for(const z of [-4.5,0,4.5]){
- const crossbeam=box(hall,0,3.08,z,11.5,.18,.2,wood);crossbeam.castShadow=true;
+// No low crossbeams across the visitor's sightline: roof rafters remain above the room.
+for(const z of [-4.5,0]){
+ const crossbeam=box(hall,0,3.15,z,11.5,.12,.16,wood);crossbeam.castShadow=true;
 }
 for(const x of [-3.0,0,3.0]){
  cyl(hall,x,2.95,-.2,.025,.025,.42,black,8);
@@ -306,8 +307,8 @@ centerpieceCore.scale.set(.72,.65,.65);
 const centerpieceWingL=box(chapel,-.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
 const centerpieceWingR=box(chapel,.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingR.rotation.z=.2;
  let active='main-room',target=new THREE.Vector3(0,1.6,-3.5),camTarget=new THREE.Vector3(0,2,0),dragging=false,lastX=0,lastY=0,yaw=0,pitch=0;
- const positions={'main-room':[0,2.5,14.2],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
- function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,id==='main-room'?1.9:1.65,id==='main-room'?-1.2:-3.8);camera.lookAt(target);yaw=0;pitch=0}
+ const positions={'main-room':[0,3.15,14.2],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
+ function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,id==='main-room'?1.45:1.65,id==='main-room'?-1.2:-3.8);camera.lookAt(target);yaw=0;pitch=0}
  window.showClubhouseRoom=showRoom;
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
  const ro=new ResizeObserver(resize);ro.observe(host);resize();showRoom('main-room');
