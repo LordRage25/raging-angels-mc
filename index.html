@@ -164,7 +164,29 @@ function initClubhouse3D(){
    const makeText=(txt,size,y,color=0xe1e5d8)=>{const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.font='bold 64px Georgia';ctx.textAlign='center';ctx.fillText(txt,512,82);const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(size,.38),new THREE.MeshBasicMaterial({map:tex,transparent:true}));mesh.position.set(0,y,-5.2);g.add(mesh)};
    makeText('RAGING ANGELS',3.5,2.85);makeText('181  ·  MC',2.1,1.28,0xb9c8a9);
  }
- const hall=baseRoom('main-room');wallCrest(hall);addBike(hall,-3.6,-1.8,.9);addBike(hall,3.6,-1.8,.9);chair(hall,-2.1,-2.6,.2);chair(hall,2.1,-2.6,-.2);table(hall,0,-2.4,1.8,.9);
+ const hall=baseRoom('main-room');
+// The main clubhouse is the large national gathering hall, not a tiny office.
+// Enlarge the room shell and furnishings together so the hall reads as a real club headquarters.
+hall.scale.setScalar(1.55);
+wallCrest(hall);
+addBike(hall,-4.2,-1.2,1.05);addBike(hall,4.2,-1.2,1.05);
+addBike(hall,-6.2,1.2,.92);addBike(hall,6.2,1.2,.92);
+chair(hall,-2.2,-2.8,.2);chair(hall,2.2,-2.8,-.2);
+table(hall,0,-2.5,2.4,1.1);
+// Long timber ceiling trusses and overhead club lighting make the main hall feel broad and enclosed.
+box(hall,0,3.28,0,11.8,.22,11.6,darkWood);
+for(const x of [-5,-2.5,0,2.5,5]){
+ const beam=box(hall,x,3.05,0,.16,.18,11.2,wood);beam.castShadow=true;
+ const fixture=box(hall,x,2.82,-.5,.34,.09,.48,gold,false);
+ const lamp=new THREE.PointLight(0xffd9a1,2.8,7);lamp.position.set(x,2.65,-.5);hall.add(lamp);
+}
+for(const z of [-4.5,-1.5,1.5,4.5]){
+ const beam=box(hall,0,3.02,z,11.3,.16,.18,wood);beam.castShadow=true;
+}
+// Additional leather benches along the side walls, keeping the centre aisle open.
+for(const z of [-2.8,0.2,3.2]){
+ chair(hall,-5.1,z,Math.PI/2);chair(hall,5.1,z,-Math.PI/2);
+}
  const bar=baseRoom('bar-room');box(bar,0,1.12,-3.6,5.4,.3,1.15,wood);box(bar,0,.88,-3.05,5.4,.22,.16,gold);for(let x=-2;x<=2;x+=1)cyl(bar,x,.58,-2.45,.22,.22,.15,chrome,12);for(let x=-2;x<=2;x+=.8){cyl(bar,x,1.55,-4.1,.09,.09,.5,green,12);box(bar,x,1.84,-4.1,.22,.1,.22,gold)}for(const x of [-3.4,3.4]){chair(bar,x,-1.2,.2);chair(bar,x,1.2,Math.PI)}addBike(bar,-4.1,2.3,.65);
  const pool=baseRoom('pool-room');box(pool,0,.92,-.2,3.4,.22,1.9,wood);box(pool,0,1.05,-.2,3.12,.06,1.62,felt);for(const x of [-1.45,1.45])for(const z of [-.9,.5])cyl(pool,x,1.01,z,.1,.1,.15,black,12);for(const x of [-1.6,1.6])box(pool,x,.58,-.2,.16,.8,.16,wood);for(const z of [-.9,.5])box(pool,0,.58,z,3.1,.8,.15,wood);for(const p of [[-3,-2],[3,-2],[-3,1.7],[3,1.7]])chair(pool,p[0],p[1]);for(let i=0;i<3;i++){const cue=cyl(pool,-.9+i*.16,1.4,2.6,.025,.025,1.6,wood,8);cue.rotation.x=.18}
  const chapel=baseRoom('chapel');
@@ -188,8 +210,8 @@ centerpieceCore.scale.set(.72,.65,.65);
 const centerpieceWingL=box(chapel,-.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
 const centerpieceWingR=box(chapel,.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingR.rotation.z=.2;
  let active='main-room',target=new THREE.Vector3(0,1.6,-3.5),camTarget=new THREE.Vector3(0,2,0),dragging=false,lastX=0,lastY=0,yaw=0,pitch=0;
- const positions={'main-room':[0,1.9,7.5],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
- function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,1.65,-3.8);camera.lookAt(target);yaw=0;pitch=0}
+ const positions={'main-room':[0,2.6,11.8],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
+ function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0, id==='main-room'?2.25:-3.8);camera.lookAt(target);yaw=0;pitch=0}
  window.showClubhouseRoom=showRoom;
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
  const ro=new ResizeObserver(resize);ro.observe(host);resize();showRoom('main-room');
