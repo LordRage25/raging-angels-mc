@@ -236,6 +236,13 @@ for(const side of [-1,1])for(const z of [-4.2,-.8,2.6]){
  box(hall,x-side*.05,2.15,z,.035,.98,1.25,black,false);
  box(hall,x-side*.075,2.15,z,.025,.84,1.1,side<0?green:wood,false);
 }
+// Actual Raging Angels MC California patch floor inlay. The artwork is loaded as an image texture.
+const patchTexture=new THREE.TextureLoader().load('/ra-california-patch.jpg');
+patchTexture.colorSpace=THREE.SRGBColorSpace;
+const patchBacking=new THREE.Mesh(new THREE.CircleGeometry(2.12,64),new THREE.MeshStandardMaterial({color:0x172016,roughness:.88,metalness:.12}));
+patchBacking.rotation.x=-Math.PI/2;patchBacking.position.set(0,.045,0);patchBacking.receiveShadow=true;hall.add(patchBacking);
+const patchFloor=new THREE.Mesh(new THREE.PlaneGeometry(3.45,3.47),new THREE.MeshBasicMaterial({map:patchTexture,side:THREE.DoubleSide,transparent:false,depthWrite:false}));
+patchFloor.rotation.x=-Math.PI/2;patchFloor.position.set(0,.058,0);patchFloor.renderOrder=2;hall.add(patchFloor);
 // Parquet floor, with a broad clear centre walkway.
 const parquetA=mat(0x624a32,.9),parquetB=mat(0x493522,.92);
 for(let x=-7.1;x<7.1;x+=.72)for(let z=-6.4;z<8.0;z+=.72){
