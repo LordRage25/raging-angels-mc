@@ -214,7 +214,7 @@ function initClubhouse3D(){
  const hall=baseRoom('main-room');
 hall.scale.setScalar(1.42);
 wallCrest(hall);
-// Main Hall: a proper club meeting space, with the entrance facing the visitor and no bar or bikes.
+// Main Hall lounge: open central floor, perimeter couches, clear entrance and two labelled interior doors.
 for(const z of [-4.7,-2.3,.1,2.5,4.9]){
  box(hall,0,1.05,z,11.2,.13,.16,darkWood);
  box(hall,0,2.55,z,11.2,.1,.14,darkWood);
@@ -224,60 +224,73 @@ for(const x of [-5.25,5.25])for(const z of [-4.5,-2.1,.3,2.7,5.1]){
  box(hall,x*.985,1.8,z,.05,1.08,1.25,darkWood);
  box(hall,x*.97,1.8,z,.035,1.0,1.17,wall);
 }
-// Wide double entrance doors, inset panels, metal handles and a heavy timber lintel.
+// Main entrance doors on the front wall.
 box(hall,0,1.55,5.63,3.55,3.0,.22,darkWood);
 for(const side of [-1,1]){
- const door=box(hall,side*.82,1.48,5.48,1.52,2.55,.16,wood);
+ box(hall,side*.82,1.48,5.48,1.52,2.55,.16,wood);
  box(hall,side*.82,1.58,5.375,1.22,1.95,.045,darkWood);
  box(hall,side*.82,1.58,5.345,1.08,1.78,.035,wood);
- box(hall,side*.82,2.82,5.32,1.22,.06,.04,gold,false);
  cyl(hall,side*.18,1.42,5.29,.045,.045,.16,gold,10);
 }
 box(hall,0,3.12,5.47,3.85,.2,.3,wood);
-for(const x of [-1.95,1.95])box(hall,x,1.55,5.5,.16,3.15,.32,gold);
-// Parquet timber floor, warm but not glossy.
+for(const x of [-1.95,1.95])box(hall,x,1.55,5.5,.16,3.15,.32,gold,false);
+// Interior doorways in the back wall: meeting room and garage, each with a clear sign.
+for(const x of [-3.25,3.25]){
+ box(hall,x,1.35,-5.56,2.35,2.65,.22,darkWood);
+ box(hall,x,1.34,-5.42,2.08,2.38,.10,wood);
+ box(hall,x,1.34,-5.34,1.76,2.06,.06,black);
+ box(hall,x,2.52,-5.25,2.0,.14,.12,gold,false);
+}
+function signText(g,label,x,y,z){
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#d9e4cb';ctx.font='bold 42px Georgia';ctx.textAlign='center';ctx.fillText(label,256,80);
+ const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.8,.42),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));
+ mesh.position.set(x,y,z);g.add(mesh);
+}
+signText(hall,'MEETING ROOM',-3.25,2.85,-5.20);
+signText(hall,'GARAGE',3.25,2.85,-5.20);
+// Parquet floor.
 const parquetA=mat(0x624a32,.9),parquetB=mat(0x493522,.92);
 for(let x=-5.2;x<5.2;x+=.72)for(let z=-5.2;z<5.2;z+=.72){
  const tile=box(hall,x,.012,z,.69,.018,.69,((Math.round((x+z)/.72)%2)===0)?parquetA:parquetB,false);
  tile.castShadow=false;
 }
-// Central meeting table and a clear walkway from the entrance to the club crest.
-table(hall,0,-.85,3.0,1.25);
-for(const z of [-2.0,.35])for(const x of [-1.5,-.5,.5,1.5])chair(hall,x,z,z<0?0:Math.PI);
-for(const x of [-4.1,4.1])for(const z of [-2.7,-.2,2.3])chair(hall,x,z,x<0?Math.PI/2:-Math.PI/2);
-// Wall-mounted framed club history and chapter boards along both sides.
+// Modular leather couches around the perimeter; leave a broad walking route through the middle.
+function hallSofa(g,x,z,length=2.3,rot=0){
+ const s=new THREE.Group();s.position.set(x,0,z);s.rotation.y=rot;g.add(s);
+ box(s,0,.39,0,length,.42,.82,leather);
+ box(s,0,.76,-.31,length,.42,.20,leather);
+ for(const dx of [-length/2+.13,length/2-.13])box(s,dx,.62,0,.20,.48,.82,leather);
+ for(let i=0;i<Math.max(2,Math.floor(length/.65));i++){
+  const px=-length/2+.4+i*.62;
+  box(s,px,.63,-.02,.55,.10,.58,mat(i%2?0x343128:0x403b31,.82));
+ }
+ for(const dx of [-length/2+.25,length/2-.25])for(const dz of [-.28,.28])box(s,dx,.16,dz,.12,.28,.12,darkWood);
+}
+hallSofa(hall,-3.9,3.5,2.6,0);hallSofa(hall,0,3.5,2.5,0);hallSofa(hall,3.9,3.5,2.6,0);
+hallSofa(hall,-3.9,-2.1,2.6,Math.PI);hallSofa(hall,0,-2.1,2.5,Math.PI);hallSofa(hall,3.9,-2.1,2.6,Math.PI);
+hallSofa(hall,-4.45,.65,2.0,Math.PI/2);hallSofa(hall,4.45,.65,2.0,-Math.PI/2);
+// Side-wall framed club history and chapter displays.
 for(const side of [-1,1])for(const z of [-3.6,-.5,2.6]){
  const x=side*5.52;
- box(hall,x,2.15,z, .08,1.15,1.45,darkWood);
+ box(hall,x,2.15,z,.08,1.15,1.45,darkWood);
  box(hall,x-side*.05,2.15,z,.035,.98,1.25,black,false);
  box(hall,x-side*.075,2.15,z,.025,.84,1.1,side<0?green:wood,false);
 }
-// Framed windows high on the side walls, with dark mullions and muted reflected glass.
-for(const side of [-1,1])for(const z of [-2.6,.1,2.8]){
- const x=side*5.5;
- box(hall,x,2.55,z,.07,.9,1.55,darkWood);
- box(hall,x-side*.045,2.55,z,.025,.72,1.34,mat(0x52615a,.28,.22),false);
- box(hall,x-side*.065,2.55,z,.025,.72,.045,gold,false);
- box(hall,x-side*.065,2.55,z,.025,.045,1.34,gold,false);
- box(hall,x-side*.08,2.55,z,.025,.72,.035,darkWood,false);
- box(hall,x-side*.08,2.55,z,.025,.035,1.34,darkWood,false);
-}
-// High roof with rafters fixed close to the roof plane, outside the clear view of the crest.
-// Continuous ceiling sits directly above the wall tops; shallow rafters attach to its underside.
-box(hall,0,3.24,0,11.8,.24,11.6,darkWood);
+// High ceiling and all structural beams raised together. Rafters sit flush beneath the roof; no beams cut across the camera view.
+box(hall,0,4.65,0,11.8,.28,11.6,darkWood);
 for(const x of [-5,-2.5,0,2.5,5]){
- const rafter=box(hall,x,3.08,0,.22,.18,11.35,wood);rafter.castShadow=true;
+ const rafter=box(hall,x,4.45,0,.24,.18,11.35,wood);rafter.castShadow=true;
 }
-// No low crossbeams across the visitor's sightline: roof rafters remain above the room.
-for(const z of [-4.5,0]){
- const crossbeam=box(hall,0,3.15,z,11.5,.12,.16,wood);crossbeam.castShadow=true;
+for(const z of [-4.5,0,4.5]){
+ const crossbeam=box(hall,0,4.45,z,11.5,.18,.22,wood);crossbeam.castShadow=true;
 }
 for(const x of [-3.0,0,3.0]){
- cyl(hall,x,2.95,-.2,.025,.025,.42,black,8);
- const shade=new THREE.Mesh(new THREE.ConeGeometry(.38,.25,16,1,true),gold);shade.position.set(x,2.72,-.2);shade.rotation.x=Math.PI;hall.add(shade);
- const glow=new THREE.PointLight(0xffdca1,5.5,9);glow.position.set(x,2.58,-.2);hall.add(glow);
+ cyl(hall,x,4.14,-.2,.025,.025,.45,black,8);
+ const shade=new THREE.Mesh(new THREE.ConeGeometry(.4,.27,16,1,true),gold);shade.position.set(x,3.9,-.2);shade.rotation.x=Math.PI;hall.add(shade);
+ const glow=new THREE.PointLight(0xffdca1,5.5,10);glow.position.set(x,3.7,-.2);hall.add(glow);
 }
-// Wall sconces add warm, practical light without washing out the crest.
 for(const side of [-1,1])for(const z of [-3.5,1.7]){
  const lampX=side*5.15;
  box(hall,lampX,2.25,z,.16,.36,.18,gold,false);
@@ -307,7 +320,7 @@ centerpieceCore.scale.set(.72,.65,.65);
 const centerpieceWingL=box(chapel,-.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
 const centerpieceWingR=box(chapel,.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingR.rotation.z=.2;
  let active='main-room',target=new THREE.Vector3(0,1.6,-3.5),camTarget=new THREE.Vector3(0,2,0),dragging=false,lastX=0,lastY=0,yaw=0,pitch=0;
- const positions={'main-room':[0,3.15,14.2],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
+ const positions={'main-room':[0,3.5,15.2],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
  function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,id==='main-room'?1.45:1.65,id==='main-room'?-1.2:-3.8);camera.lookAt(target);yaw=0;pitch=0}
  window.showClubhouseRoom=showRoom;
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
