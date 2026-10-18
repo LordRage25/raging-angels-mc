@@ -117,6 +117,7 @@ function initClubhouse3D(){
  const greenLight=new THREE.PointLight(0x8fca68,9,15);greenLight.position.set(0,3.7,0);scene.add(greenLight);
  const fillLight=new THREE.PointLight(0xffd9a1,18,22);fillLight.position.set(0,4.5,5);scene.add(fillLight);
  const frontFill=new THREE.DirectionalLight(0xe1e8d7,1.4);frontFill.position.set(0,5,8);scene.add(frontFill);
+ const roofFill=new THREE.PointLight(0xffe7c2,22,28);roofFill.position.set(0,6,1);scene.add(roofFill);
  const mat=(color,roughness=.78,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
  
  const wood=mat(0x5a4027,.82),darkWood=mat(0x241b12,.86),floorMat=mat(0x3b3020,.92),black=mat(0x101310,.38,.65),chrome=mat(0x9da49a,.25,.82),leather=mat(0x29251d,.64),green=mat(0x24553a,.45),felt=mat(0x14512f,.9),gold=mat(0xb5a16b,.34,.55),wall=mat(0x242b20,.9),ivory=mat(0xe0e4d5,.48,.2);
@@ -164,19 +165,49 @@ function initClubhouse3D(){
    for(const dx of [-w*.42,w*.42])for(const dz of [-d*.36,d*.36])box(g,x+dx,.4,z+dz,.1,.75,.1,darkWood);
  }
  function wallCrest(g){
-   box(g,0,2.1,-5.48,5.2,2.55,.28,darkWood);
-   box(g,0,2.1,-5.28,4.88,2.25,.08,black);
-   // Double inset metal trim around the club's wall display.
-   for(const y of [1.02,3.18])box(g,0,y,-5.20,4.95,.045,.045,gold,false);
-   for(const x of [-2.43,2.43])box(g,x,2.1,-5.20,.045,2.2,.045,gold,false);
-   const ring=new THREE.Mesh(new THREE.TorusGeometry(.65,.055,12,48),gold);ring.position.set(0,2.05,-5.25);g.add(ring);
-   // Stylised Spartan helmet emblem in metal, with wing-like side plates.
-   const helmet=sphere(g,0,2.12,-5.2,.42,chrome);helmet.scale.set(.75,1,.28);
-   box(g,0,1.88,-5.17,.45,.12,.12,black);
-   for(const side of [-1,1]){const wing=box(g,side*.63,2.25,-5.24,.55,.16,.08,gold);wing.rotation.z=side*.23;for(let i=0;i<3;i++){const feather=box(g,side*(.63+i*.12),2.38+i*.05,-5.25,.38-i*.05,.045,.06,chrome);feather.rotation.z=side*.3}}
-   // raised lettering on the wall plaque
-   const makeText=(txt,size,y,color=0xe1e5d8)=>{const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.font='bold 64px Georgia';ctx.textAlign='center';ctx.fillText(txt,512,82);const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(size,.38),new THREE.MeshBasicMaterial({map:tex,transparent:true}));mesh.position.set(0,y,-5.2);g.add(mesh)};
-   makeText('RAGING ANGELS',3.5,2.85);makeText('181  ·  MC',2.1,1.28,0xb9c8a9);
+   // Large wall-mounted club crest display: silver Spartan skull, green plume,
+   // spread wings, spear and shield, framed like the supplied Raging Angels patch.
+   box(g,0,2.2,-5.48,6.25,2.75,.32,darkWood);
+   box(g,0,2.2,-5.25,5.92,2.46,.08,black);
+   for(const y of [.99,3.41])box(g,0,y,-5.18,5.95,.055,.055,gold,false);
+   for(const x of [-2.93,2.93])box(g,x,2.2,-5.18,.055,2.45,.055,gold,false);
+   const makeText=(txt,w,y,color=0xe1e5d8,size=64)=>{
+     const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=150;
+     const ctx=canvas.getContext('2d');ctx.fillStyle='#'+color.toString(16).padStart(6,'0');
+     ctx.font='bold '+size+'px Georgia';ctx.textAlign='center';ctx.shadowColor='#000';ctx.shadowBlur=5;ctx.fillText(txt,512,100);
+     const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
+     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,.42),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));
+     mesh.position.set(0,y,-5.12);g.add(mesh);
+   };
+   makeText('RAGING ANGELS',4.5,3.0,0xdfe3d5,72);
+   makeText('181  •  MC',2.0,1.18,0xc0d2b0,56);
+   // Wing feathers fan out from the helmet on both sides.
+   const wingMat=mat(0x77796e,.38,.62),greenMetal=mat(0x31552b,.32,.58),silver=mat(0xc2c4b8,.25,.78);
+   for(const side of [-1,1]){
+     for(let i=0;i<8;i++){
+       const feather=box(g,side*(.72+i*.19),2.35+i*.085,-5.14,.95-i*.055,.13,.11,wingMat);
+       feather.rotation.z=side*(-.42+i*.065);
+     }
+   }
+   // Spear angled up along the left wing.
+   const spear=cyl(g,-1.68,2.12,-5.12,.045,.045,2.5,silver,12);spear.rotation.z=.27;
+   const spearTip=new THREE.Mesh(new THREE.ConeGeometry(.14,.48,6),silver);spearTip.position.set(-2.02,3.35,-5.12);spearTip.rotation.z=.27;g.add(spearTip);
+   // Helmet plume.
+   const plume= new THREE.Mesh(new THREE.ConeGeometry(.42,1.05,12),greenMetal);plume.position.set(0,2.95,-5.16);plume.rotation.z=.03;g.add(plume);
+   // Armoured skull helmet, brow, cheek guards and teeth.
+   const helmet=sphere(g,0,2.28,-5.03,.57,silver);helmet.scale.set(.77,.91,.36);
+   const face=sphere(g,0,2.19,-4.99,.38,mat(0x777b73,.42,.65));face.scale.set(.85,1,.35);
+   box(g,0,2.48,-4.88,.72,.16,.08,greenMetal);
+   for(const side of [-1,1]){
+     const eye=sphere(g,side*.19,2.32,-4.78,.12,black);eye.scale.set(1,.65,.35);
+     const cheek=box(g,side*.37,2.02,-4.88,.18,.45,.1,silver);cheek.rotation.z=side*.24;
+   }
+   box(g,0,1.93,-4.81,.4,.14,.08,black);
+   for(let i=0;i<5;i++)box(g,-.2+i*.1,1.87,-4.78,.045,.1,.035,ivory,false);
+   // Right-side green shield with raised silver rim and 181 marking.
+   const shield=sphere(g,1.48,1.95,-5.02,.68,greenMetal);shield.scale.set(.72,1,.2);
+   const shieldRing=new THREE.Mesh(new THREE.TorusGeometry(.57,.055,10,32),silver);shieldRing.position.set(1.48,1.95,-4.96);g.add(shieldRing);
+   makeText('181',.72,1.86,0xe4e4d7,58);
  }
  const hall=baseRoom('main-room');
 // The main clubhouse is the large national gathering hall, not a tiny office.
@@ -195,14 +226,20 @@ addBike(hall,-6.2,1.2,.92);addBike(hall,6.2,1.2,.92);
 chair(hall,-2.2,-2.8,.2);chair(hall,2.2,-2.8,-.2);
 table(hall,0,-2.5,2.4,1.1);
 // Long timber ceiling trusses and overhead club lighting make the main hall feel broad and enclosed.
-box(hall,0,3.28,0,11.8,.22,11.6,darkWood);
+// Solid roof sits above the visible rafters; beams are mounted to the underside, not floating below it.
+box(hall,0,3.62,0,11.8,.22,11.6,darkWood);
 for(const x of [-5,-2.5,0,2.5,5]){
- const beam=box(hall,x,3.05,0,.16,.18,11.2,wood);beam.castShadow=true;
- const fixture=box(hall,x,2.82,-.5,.34,.09,.48,gold,false);
- const lamp=new THREE.PointLight(0xffd9a1,2.8,7);lamp.position.set(x,2.65,-.5);hall.add(lamp);
+ const rafter=box(hall,x,3.43,0,.24,.24,11.35,wood);rafter.castShadow=true;
+ const fixture=box(hall,x,3.19,-.5,.42,.12,.5,gold,false);
+ const lamp=new THREE.PointLight(0xffd9a1,3.2,8);lamp.position.set(x,3.0,-.5);hall.add(lamp);
 }
 for(const z of [-4.5,-1.5,1.5,4.5]){
- const beam=box(hall,0,3.02,z,11.3,.16,.18,wood);beam.castShadow=true;
+ const crossbeam=box(hall,0,3.4,z,11.5,.24,.24,wood);crossbeam.castShadow=true;
+}
+// Diagonal roof braces make the exposed timber structure read as a real clubhouse roof.
+for(const x of [-5,5]){
+ const brace=box(hall,x*.72,3.12,-3.5,2.3,.18,.18,wood);brace.rotation.z=x<0?-.45:.45;
+ const brace2=box(hall,x*.72,3.12,3.5,2.3,.18,.18,wood);brace2.rotation.z=x<0?-.45:.45;
 }
 // Additional leather benches along the side walls, keeping the centre aisle open.
 for(const z of [-2.8,0.2,3.2]){
