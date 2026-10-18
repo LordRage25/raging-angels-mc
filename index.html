@@ -210,40 +210,53 @@ function initClubhouse3D(){
    makeText('181',.72,1.86,0xe4e4d7,58);
  }
  const hall=baseRoom('main-room');
-// The main clubhouse is the large national gathering hall, not a tiny office.
-// Enlarge the room shell and furnishings together so the hall reads as a real club headquarters.
-hall.scale.setScalar(1.55);
+hall.scale.setScalar(1.42);
 wallCrest(hall);
-// Timber dado rails and framed wall panels around the full hall perimeter.
+// Traditional biker clubhouse hall: clear central floor, lounge seating, wall memorabilia and a long bar to the left.
 for(const z of [-4.7,-2.3,.1,2.5,4.9]){box(hall,0,1.05,z,11.2,.13,.16,darkWood);box(hall,0,2.55,z,11.2,.1,.14,darkWood)}
 for(const x of [-5.25,5.25])for(const z of [-4.5,-2.1,.3,2.7,5.1]){
  box(hall,x,1.8,z,.12,1.35,1.55,wood);
  box(hall,x*.985,1.8,z,.05,1.08,1.25,darkWood);
  box(hall,x*.97,1.8,z,.035,1.0,1.17,wall);
 }
-addBike(hall,-4.2,-1.2,1.05);addBike(hall,4.2,-1.2,1.05);
-addBike(hall,-6.2,1.2,.92);addBike(hall,6.2,1.2,.92);
-chair(hall,-2.2,-2.8,.2);chair(hall,2.2,-2.8,-.2);
-table(hall,0,-2.5,2.4,1.1);
-// Long timber ceiling trusses and overhead club lighting make the main hall feel broad and enclosed.
-// Solid roof sits above the visible rafters; beams are mounted to the underside, not floating below it.
-box(hall,0,3.62,0,11.8,.22,11.6,darkWood);
+// Parquet-style floor inlays: small alternating timber squares, kept nearly flush to avoid a noisy silhouette.
+const parquetA=mat(0x59432e,.86),parquetB=mat(0x443222,.9);
+for(let x=-5.2;x<5.2;x+=.72)for(let z=-5.2;z<5.2;z+=.72){
+ const tile=box(hall,x,-.0,z,.69,.018,.69,((Math.round((x+z)/.72)%2)===0)?parquetA:parquetB,false);
+ tile.castShadow=false;
+}
+// Curved-front bar on the left, with a timber counter, brass foot rail and back-bar shelves.
+box(hall,-4.15,1.05,-1.0,2.0,.24,4.8,darkWood);
+box(hall,-4.15,1.2,-1.0,2.08,.16,4.9,wood);
+box(hall,-4.15,1.31,-1.0,2.12,.07,4.94,gold);
+for(const z of [-2.7,-1.6,-.5,.6]){cyl(hall,-3.2,1.62,z,.09,.09,.38,gold,12);cyl(hall,-3.2,1.86,z,.08,.08,.14,green,12)}
+for(const z of [-2.6,-1.2,.2]){box(hall,-5.05,1.9,z,.12,1.0,.75,wood);box(hall,-4.96,1.9,z,.08,.8,.58,black)}
+// Lounge zone at the back right: low sofas and coffee tables, leaving the centre aisle open.
+function sofa(g,x,z,rot=0){
+ const s=new THREE.Group();s.position.set(x,0,z);s.rotation.y=rot;g.add(s);
+ box(s,0,.38,0,2.15,.42,.82,leather);
+ box(s,0,.77,-.32,2.15,.55,.22,leather);
+ for(const dx of [-.94,.94])box(s,dx,.65,0,.22,.5,.82,leather);
+ for(const dx of [-.62,0,.62])box(s,dx,.62,-.05,.58,.12,.58,mat(0x353127,.78));
+}
+sofa(hall,2.6,-2.1,0);sofa(hall,2.6,.2,0);table(hall,2.6,-.95,1.65,.9);
+chair(hall,.6,-2.6,.15);chair(hall,.6,.55,-.15);
+// Four bikes along the outer walls, not intruding into the centre aisle.
+addBike(hall,-5.1,2.8,.88);addBike(hall,5.0,2.8,.88);
+addBike(hall,-5.0,-3.6,.82);addBike(hall,5.0,-3.6,.82);
+// Roof and rafters are raised above the viewing line. Keep only three structural crossbeams; no low beams across the emblem.
+box(hall,0,4.0,0,11.8,.22,11.6,darkWood);
 for(const x of [-5,-2.5,0,2.5,5]){
- const rafter=box(hall,x,3.43,0,.24,.24,11.35,wood);rafter.castShadow=true;
- const fixture=box(hall,x,3.19,-.5,.42,.12,.5,gold,false);
- const lamp=new THREE.PointLight(0xffd9a1,3.2,8);lamp.position.set(x,3.0,-.5);hall.add(lamp);
+ const rafter=box(hall,x,3.82,0,.22,.18,11.35,wood);rafter.castShadow=true;
+ const fixture=box(hall,x,3.58,-.5,.38,.09,.42,gold,false);
+ const lamp=new THREE.PointLight(0xffd9a1,3.0,8);lamp.position.set(x,3.35,-.5);hall.add(lamp);
 }
-for(const z of [-4.5,-1.5,1.5,4.5]){
- const crossbeam=box(hall,0,3.4,z,11.5,.24,.24,wood);crossbeam.castShadow=true;
-}
-// Diagonal roof braces make the exposed timber structure read as a real clubhouse roof.
-for(const x of [-5,5]){
- const brace=box(hall,x*.72,3.12,-3.5,2.3,.18,.18,wood);brace.rotation.z=x<0?-.45:.45;
- const brace2=box(hall,x*.72,3.12,3.5,2.3,.18,.18,wood);brace2.rotation.z=x<0?-.45:.45;
-}
-// Additional leather benches along the side walls, keeping the centre aisle open.
-for(const z of [-2.8,0.2,3.2]){
- chair(hall,-5.1,z,Math.PI/2);chair(hall,5.1,z,-Math.PI/2);
+for(const z of [-4.5,0,4.5]){const crossbeam=box(hall,0,3.8,z,11.5,.18,.18,wood);crossbeam.castShadow=true;}
+// Hanging warm pendant lamps like the reference interior.
+for(const x of [-2.4,1.0,4.0]){
+ cyl(hall,x,3.25,-.5,.025,.025,.55,black,8);
+ const shade=new THREE.Mesh(new THREE.ConeGeometry(.42,.28,16,1,true),gold);shade.position.set(x,2.94,-.5);shade.rotation.x=Math.PI;hall.add(shade);
+ const glow=new THREE.PointLight(0xffdca1,5,7);glow.position.set(x,2.85,-.5);hall.add(glow);
 }
  const bar=baseRoom('bar-room');box(bar,0,1.12,-3.6,5.4,.3,1.15,wood);box(bar,0,.88,-3.05,5.4,.22,.16,gold);for(let x=-2;x<=2;x+=1)cyl(bar,x,.58,-2.45,.22,.22,.15,chrome,12);for(let x=-2;x<=2;x+=.8){cyl(bar,x,1.55,-4.1,.09,.09,.5,green,12);box(bar,x,1.84,-4.1,.22,.1,.22,gold)}for(const x of [-3.4,3.4]){chair(bar,x,-1.2,.2);chair(bar,x,1.2,Math.PI)}addBike(bar,-4.1,2.3,.65);
  const pool=baseRoom('pool-room');box(pool,0,.92,-.2,3.4,.22,1.9,wood);box(pool,0,1.05,-.2,3.12,.06,1.62,felt);for(const x of [-1.45,1.45])for(const z of [-.9,.5])cyl(pool,x,1.01,z,.1,.1,.15,black,12);for(const x of [-1.6,1.6])box(pool,x,.58,-.2,.16,.8,.16,wood);for(const z of [-.9,.5])box(pool,0,.58,z,3.1,.8,.15,wood);for(const p of [[-3,-2],[3,-2],[-3,1.7],[3,1.7]])chair(pool,p[0],p[1]);for(let i=0;i<3;i++){const cue=cyl(pool,-.9+i*.16,1.4,2.6,.025,.025,1.6,wood,8);cue.rotation.x=.18}
@@ -268,8 +281,8 @@ centerpieceCore.scale.set(.72,.65,.65);
 const centerpieceWingL=box(chapel,-.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingL.rotation.z=-.2;
 const centerpieceWingR=box(chapel,.43,1.34,-.45,.35,.045,.08,gold);centerpieceWingR.rotation.z=.2;
  let active='main-room',target=new THREE.Vector3(0,1.6,-3.5),camTarget=new THREE.Vector3(0,2,0),dragging=false,lastX=0,lastY=0,yaw=0,pitch=0;
- const positions={'main-room':[0,2.6,11.8],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
- function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,id==='main-room'?2.25:1.65,id==='main-room'?-5.5:-3.8);camera.lookAt(target);yaw=0;pitch=0}
+ const positions={'main-room':[0,2.5,14.2],'bar-room':[0,2.0,7.2],'pool-room':[0,2.05,7.4],'chapel':[0,1.95,7.2]};
+ function showRoom(id){active=id;Object.entries(rooms).forEach(([key,g])=>g.visible=key===id);const p=positions[id];camera.position.set(...p);target.set(0,id==='main-room'?1.9:1.65,id==='main-room'?-1.2:-3.8);camera.lookAt(target);yaw=0;pitch=0}
  window.showClubhouseRoom=showRoom;
  function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
  const ro=new ResizeObserver(resize);ro.observe(host);resize();showRoom('main-room');
