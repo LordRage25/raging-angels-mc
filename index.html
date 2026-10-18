@@ -263,17 +263,25 @@ for(const side of [-1,1])for(const z of [-2.6,.1,2.8]){
  box(hall,x-side*.08,2.55,z,.025,.035,1.34,darkWood,false);
 }
 // High roof with rafters fixed close to the roof plane, outside the clear view of the crest.
-box(hall,0,4.0,0,11.8,.22,11.6,darkWood);
+// Continuous ceiling sits directly above the wall tops; shallow rafters attach to its underside.
+box(hall,0,3.24,0,11.8,.24,11.6,darkWood);
 for(const x of [-5,-2.5,0,2.5,5]){
- const rafter=box(hall,x,3.84,0,.2,.16,11.35,wood);rafter.castShadow=true;
+ const rafter=box(hall,x,3.08,0,.22,.18,11.35,wood);rafter.castShadow=true;
 }
 for(const z of [-4.5,0,4.5]){
- const crossbeam=box(hall,0,3.84,z,11.5,.16,.18,wood);crossbeam.castShadow=true;
+ const crossbeam=box(hall,0,3.08,z,11.5,.18,.2,wood);crossbeam.castShadow=true;
 }
 for(const x of [-3.0,0,3.0]){
- cyl(hall,x,3.25,-.2,.025,.025,.5,black,8);
- const shade=new THREE.Mesh(new THREE.ConeGeometry(.38,.25,16,1,true),gold);shade.position.set(x,2.98,-.2);shade.rotation.x=Math.PI;hall.add(shade);
- const glow=new THREE.PointLight(0xffdca1,4.5,8);glow.position.set(x,2.82,-.2);hall.add(glow);
+ cyl(hall,x,2.95,-.2,.025,.025,.42,black,8);
+ const shade=new THREE.Mesh(new THREE.ConeGeometry(.38,.25,16,1,true),gold);shade.position.set(x,2.72,-.2);shade.rotation.x=Math.PI;hall.add(shade);
+ const glow=new THREE.PointLight(0xffdca1,5.5,9);glow.position.set(x,2.58,-.2);hall.add(glow);
+}
+// Wall sconces add warm, practical light without washing out the crest.
+for(const side of [-1,1])for(const z of [-3.5,1.7]){
+ const lampX=side*5.15;
+ box(hall,lampX,2.25,z,.16,.36,.18,gold,false);
+ const bulb=sphere(hall,lampX-side*.06,2.3,z,.11,ivory);bulb.material.emissive=new THREE.Color(0x8a7a4a);bulb.material.emissiveIntensity=.45;
+ const wallGlow=new THREE.PointLight(0xffd8a0,2.4,4);wallGlow.position.set(lampX-side*.12,2.25,z);hall.add(wallGlow);
 }
  const bar=baseRoom('bar-room');box(bar,0,1.12,-3.6,5.4,.3,1.15,wood);box(bar,0,.88,-3.05,5.4,.22,.16,gold);for(let x=-2;x<=2;x+=1)cyl(bar,x,.58,-2.45,.22,.22,.15,chrome,12);for(let x=-2;x<=2;x+=.8){cyl(bar,x,1.55,-4.1,.09,.09,.5,green,12);box(bar,x,1.84,-4.1,.22,.1,.22,gold)}for(const x of [-3.4,3.4]){chair(bar,x,-1.2,.2);chair(bar,x,1.2,Math.PI)}addBike(bar,-4.1,2.3,.65);
  const pool=baseRoom('pool-room');box(pool,0,.92,-.2,3.4,.22,1.9,wood);box(pool,0,1.05,-.2,3.12,.06,1.62,felt);for(const x of [-1.45,1.45])for(const z of [-.9,.5])cyl(pool,x,1.01,z,.1,.1,.15,black,12);for(const x of [-1.6,1.6])box(pool,x,.58,-.2,.16,.8,.16,wood);for(const z of [-.9,.5])box(pool,0,.58,z,3.1,.8,.15,wood);for(const p of [[-3,-2],[3,-2],[-3,1.7],[3,1.7]])chair(pool,p[0],p[1]);for(let i=0;i<3;i++){const cue=cyl(pool,-.9+i*.16,1.4,2.6,.025,.025,1.6,wood,8);cue.rotation.x=.18}
